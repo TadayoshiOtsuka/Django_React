@@ -1,0 +1,30 @@
+version: '3'
+services:
+    db:
+        image: mysql:5.7.28
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: todo_django
+            MYSQL_USER: root
+    django:
+        build:
+            context: ./django
+            dockerfile: Dockerfile
+        command: python3 manage.py runserver 0.0.0.0:8000
+        volumes:
+            - ./django:/backend
+        ports:
+            - "8000:8000"
+        depends_on:
+            - db
+            - react
+    react:
+        build:
+            context: ./react
+            dockerfile: Dockerfile
+        volumes:
+            - ./react:/frontend
+        command: sh -c "cd todo-react && npm start"
+        ports:
+            - "3000:3000"
